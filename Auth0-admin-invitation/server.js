@@ -186,12 +186,31 @@ app.get('/callback', async (req, res) => {
       <h1>ログイン成功</h1>
       <p>Auth0での認証が正常に完了しました。</p>
       <p><a href="/">トップへ戻る</a></p>
+      <p><a href="/logout">ログアウト</a></p>
     `);
 
   } catch (err) {
     console.error('Callback error:', err);
     return res.status(500).send('Callback processing failed.');
   }
+});
+
+app.get('/logout', (req, res) => {
+  const logoutUrl = new URL(
+    `https://${process.env.AUTH0_DOMAIN}/v2/logout`
+  );
+
+  logoutUrl.searchParams.set(
+    'client_id',
+    process.env.AUTH0_APP_CLIENT_ID
+  );
+
+  logoutUrl.searchParams.set(
+    'returnTo',
+    process.env.APP_BASE_URL
+  );
+
+  res.redirect(logoutUrl.toString());
 });
 
 const port = Number(process.env.PORT || 3000);
