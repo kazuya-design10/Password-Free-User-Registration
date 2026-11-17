@@ -7,8 +7,14 @@ import { fileURLToPath } from 'node:url';
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const required = [
-  'AUTH0_DOMAIN', 'AUTH0_M2M_CLIENT_ID', 'AUTH0_M2M_CLIENT_SECRET',
-  'AUTH0_DB_CONNECTION', 'AUTH0_APP_CLIENT_ID', 'ADMIN_API_KEY'
+  'AUTH0_DOMAIN',
+  'AUTH0_M2M_CLIENT_ID',
+  'AUTH0_M2M_CLIENT_SECRET',
+  'AUTH0_DB_CONNECTION',
+  'AUTH0_APP_CLIENT_ID',
+  'AUTH0_APP_CLIENT_SECRET',
+  'APP_BASE_URL',
+  'ADMIN_API_KEY'
 ];
 for (const key of required) if (!process.env[key]) throw new Error(`${key} is required`);
 
