@@ -125,5 +125,19 @@ app.post('/api/admin/invitations', adminOnly, async (req, res) => {
   }
 });
 
+app.get('/login', (req, res) => {
+  const authorizeUrl = new URL(`https://${process.env.AUTH0_DOMAIN}/authorize`);
+
+  authorizeUrl.searchParams.set('response_type', 'code');
+  authorizeUrl.searchParams.set('client_id', process.env.AUTH0_APP_CLIENT_ID);
+  authorizeUrl.searchParams.set(
+    'redirect_uri',
+    `${process.env.APP_BASE_URL}/callback`
+  );
+  authorizeUrl.searchParams.set('scope', 'openid profile email');
+
+  res.redirect(authorizeUrl.toString());
+});
+
 const port = Number(process.env.PORT || 3000);
 app.listen(port, () => console.log(`FlowDesk: http://localhost:${port}`));
