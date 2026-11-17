@@ -139,5 +139,54 @@ app.get('/login', (req, res) => {
   res.redirect(authorizeUrl.toString());
 });
 
+app.get('/callback', async (req, res) => {
+  try {
+    const { code, error, error_description } = req.query;
+
+    if (error) {
+      return res.status(400).send(
+        `Login failed: ${error_description || error}`
+      );
+    }
+
+    if (!code) {
+      return res.status(400).send('Authorization code is missing.');
+    }
+
+    const tokenResponse = await fetch(
+      `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          grant_type: 'authorization_code',
+          client_id: process.env.AUTH0_APP_CLIENT_ID,
+          client_secret: process.env.AUTH0_APP_CLIENT_SECRET,
+          code,
+          redirect_uri: `${process.env.APP_BASE_URL}/callback`
+        })
+      }
+    );
+
+    const tokenBody = await tokenResponse.json();
+    if (!tokenResponse.ok) {
+      console.error('Token exchange failed:', tokenBody);
+      return res.status(500).send('Token exchange failed.');
+    }
+
+    return res.send(`
+      <h1>ログイン成功</h1>
+      <p>Auth0での認証が正常に完了しました。</p>
+      <p><a href="/">トップへ戻る</a></p>
+    `);
+
+  } catch (err) {
+    console.error('Callback error:', err);
+    return res.status(500).send('Callback processing failed.');
+  }
+});
+
 const port = Number(process.env.PORT || 3000);
 app.listen(port, () => console.log(`FlowDesk: http://localhost:${port}`));
