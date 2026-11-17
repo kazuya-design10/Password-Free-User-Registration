@@ -289,10 +289,14 @@
           authorizationParams: { redirect_uri: location.origin },
         });
 
+        //document.querySelectorAll('[data-login]').forEach((button) => {
+        //  button.addEventListener('click', () => window.client.loginWithRedirect());
+        //});
         document.querySelectorAll('[data-login]').forEach((button) => {
-          button.addEventListener('click', () => window.client.loginWithRedirect());
+          button.addEventListener('click', () => {
+            window.location.href = '/login';
+          });
         });
-
         const inviteDialog = document.getElementById('invite-dialog');
         document.querySelectorAll('[data-invite]').forEach((button) => {
           button.addEventListener('click', () => inviteDialog.showModal());
