@@ -217,5 +217,38 @@ app.get('/logout', (req, res) => {
   res.redirect(logoutUrl.toString());
 });
 
+app.get('/password-change-required', (req, res) => {
+  const state = req.query.state;
+  console.log('Auth0 redirect state:', state);
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+      <meta charset="UTF-8">
+      <title>パスワード変更が必要です</title>
+    </head>
+
+    <body>
+      <h1>パスワードの変更が必要です</h1>
+      <p>
+        初回ログインのため、
+        パスワードを変更してください。
+      </p>
+
+      <button id="changePassword">
+        パスワードを変更する
+      </button>
+
+      <script>
+        document
+          .getElementById('changePassword')
+          .addEventListener('click', () => {
+            // ここからAuth0のPWリセット開始処理へ
+          });
+      </script>
+    </body>
+    </html>
+  `);
+});
 const port = Number(process.env.PORT || 3000);
 app.listen(port, () => console.log(`FlowDesk: http://localhost:${port}`));
