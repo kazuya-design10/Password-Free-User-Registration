@@ -76,6 +76,8 @@ app.post('/api/admin/invitations', adminOnly, async (req, res) => {
   try {
     const token = await managementToken();
 
+　const temporaryPassword =`Tmp!${crypto.randomBytes(12).toString('base64url')}Aa1`;
+    
     const createResponse = await fetch(`https://${process.env.AUTH0_DOMAIN}/api/v2/users`, {
       method: 'POST',
       headers: {
@@ -86,6 +88,8 @@ app.post('/api/admin/invitations', adminOnly, async (req, res) => {
       body: JSON.stringify({
         connection: process.env.AUTH0_DB_CONNECTION,
         email,
+        //password: 'TempPass123!',を消すとパスワードレスでのユーザー登録となる
+        password: 'TempPass123!',
         email_verified: false,
         verify_email: false,
         ...(name ? { name } : {}),
