@@ -320,7 +320,7 @@ app.get('/password-change-required', (req, res) => {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              userId: '対象ユーザーのuser_id'
+              userId: event.user.user_id
             })
           });
       
@@ -332,7 +332,6 @@ app.get('/password-change-required', (req, res) => {
           }
           window.location.href = result.ticket;
         });
-          });
       </script>
     </body>
     </html>
