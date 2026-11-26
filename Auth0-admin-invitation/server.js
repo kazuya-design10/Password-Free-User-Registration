@@ -217,6 +217,29 @@ app.get('/logout', (req, res) => {
   res.redirect(logoutUrl.toString());
 });
 
+app.post("/start-password-reset", async (req, res) => {
+  const { email } = req.body;
+
+  const response = await fetch(
+    "https://demo-yanase.cic-demo-platform.auth0app.com/dbconnections/change_password",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        client_id: process.env.AUTH0_CLIENT_ID,
+        email,
+        connection: "Username-Password-Authentication"
+      })
+    }
+  );
+
+  const result = await response.text();
+
+  res.status(response.status).send(result);
+});
+
 app.get('/password-change-required', (req, res) => {
   const state = req.query.state;
   console.log('Auth0 redirect state:', state);
