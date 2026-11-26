@@ -240,6 +240,54 @@ app.post("/start-password-reset", async (req, res) => {
   res.status(response.status).send(result);
 });
 
+//パスワード変更URL発行
+app.post('/start-password-change', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: 'userId is required'
+      });
+    }
+    const token = await managementToken();
+    const response = await fetch(
+      `https://${process.env.AUTH0_DOMAIN}/api/v2/tickets/password-change`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          // 有効期限: 例 10分
+          ttl_sec: 600,
+          mark_email_as_verified: false
+        })
+      }
+    );
+
+    const body = await response.json();
+    if (!response.ok) {
+      console.error('Password change ticket error:', body);
+
+      return res.status(response.status).json({
+        message: body.message || 'Password change ticket creation failed'
+      });
+    }
+    return res.json({
+      ticket: body.ticket
+    });
+  } catch (error) {
+    console.error('Password change ticket error:', error);
+
+    return res.status(500).json({
+      message: 'Password change ticket creation failed'
+    });
+  }
+});
+
 app.get('/password-change-required', (req, res) => {
   const state = req.query.state;
   console.log('Auth0 redirect state:', state);
@@ -264,9 +312,26 @@ app.get('/password-change-required', (req, res) => {
 
       <script>
         document
-          .getElementById('changePassword')
-          .addEventListener('click', () => {
-            // ここからAuth0のPWリセット開始処理へ
+        .getElementById('changePassword')
+        .addEventListener('click', async () => {
+          const response = await fetch('/start-password-change', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userId: '対象ユーザーのuser_id'
+            })
+          });
+      
+          const result = await response.json();
+          if (!response.ok) {
+            console.error(result);
+            alert('パスワード変更画面を開けませんでした。');
+            return;
+          }
+          window.location.href = result.ticket;
+        });
           });
       </script>
     </body>
