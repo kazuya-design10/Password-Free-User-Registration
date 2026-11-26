@@ -320,7 +320,7 @@ app.get('/password-change-required', (req, res) => {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              userId: event.user.user_id
+              userId: 'auth0|6b07b05c6dcb6fdf760057ff'
             })
           });
       
